@@ -1,0 +1,8 @@
+fenn's weaksauce start at getting poofy blinky sequences from a png file
+
+columns 1-10: axon
+columns 10-40: upper body
+columns 40-50: lower body
+
+action.png - an anatomically incorrect representation of an action potential starting in the soma and then traveling 
+down the axon to another soma which turns red briefly
