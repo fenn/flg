@@ -15,6 +15,9 @@
  */
 
 
+#include <string.h>
+#include <stdio.h>
+
 #include <ProtoThread.hh>
 
 #include <Bus.hh>
@@ -201,6 +204,7 @@ int ProtoThread::run(void)
 		bus->lock[page].lock();
 	}
 
+        return 0;
 }
 
 void ProtoThread::relay(uint8_t idx, uint8_t state)
