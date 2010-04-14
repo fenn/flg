@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
+#include <cstdio>
+#include <cstring>
 #include <ProtoThread.hh>
 
 #include <Bus.hh>
@@ -200,7 +200,7 @@ int ProtoThread::run(void)
 		page = !page;
 		bus->lock[page].lock();
 	}
-
+        return 0; //uh, why does this func return an int?
 }
 
 void ProtoThread::relay(uint8_t idx, uint8_t state)

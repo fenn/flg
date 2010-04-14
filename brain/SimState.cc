@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <util.h>
 
 

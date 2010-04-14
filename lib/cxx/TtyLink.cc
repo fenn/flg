@@ -68,6 +68,7 @@ TtyLink::~TtyLink()
 
 bool TtyLink::send(const void *data, int len)
 {
+        uint8_t c;
 	ssize_t retval;
 	bool status = true;
 
@@ -84,8 +85,9 @@ bool TtyLink::send(const void *data, int len)
 
 	if (linkEcho) {
 		while (retval--) {
-			uint8_t c;
-			read(fd, &c, 1);
+			int blah;
+                        blah = read(fd, &c, 1);
+
 		}
 	}
 
