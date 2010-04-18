@@ -98,10 +98,9 @@ void Soma::run(void)
         //png_infop info_ptr;
         //png_structp png_ptr;
         int width, height; //width = number of channels; height = duration of sequence
-        int x=0;
-        int y=0;
+        uint8_t x=0;
+        uint8_t y=0;
 
-	uint8_t val = 0;
 	vector<string>::iterator i;
 
 	frametime.tv_sec = 0;
@@ -116,13 +115,10 @@ void Soma::run(void)
 	gettimeofday(&last_tv, NULL);
         
         row_pointers = read_png_file((char *) "../patterns/action.png");
-        //png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-        //info_ptr = png_create_info_struct(png_ptr);
-        //png_read_info(png_ptr, info_ptr);
         width = get_png_width();
         height= get_png_height();
+        //printf("height: %d, width: %d\n", height, width); 
         
-        printf("height: %d, width: %d\n", height, width); 
         while (1) {
 		state.sync();
 		state.setDigitalOut("a1b", state.getDigitalIn("l6"));
@@ -138,9 +134,9 @@ void Soma::run(void)
                 //PNG based sequencing
                 if (y >= height) {y = 0;}
                 png_byte* row = row_pointers[y];                                                                             
+
                 i = axonLedNames.begin();
-                //for (x=0; x<width; x++) {   
-                x=0;
+                x=0; //axon LED's start at pixel 0
                 for (i = axonLedNames.begin(); i != axonLedNames.end(); i++) {                                                                                    
                                 png_byte* ptr = &(row[x*3]); //get pixel rgb                                                                         
                                 //fprintf(stderr, "Pixel [x: %d, y: %d] R:%d G:%d B:%d\n",                                                      
@@ -151,17 +147,23 @@ void Soma::run(void)
                 }
                 //printf("\n"); 
 
-		//for (i = axonLedNames.begin(); i != axonLedNames.end(); i++ )
-		//	state.setLightOut(i->c_str(), val, 0x0, 0x0);
+                i = upperLedNames.begin();
+                x=10; //upper soma LED's start at pixel 10
+                for (i = upperLedNames.begin(); i != upperLedNames.end(); i++) {                                                                                    
+                                png_byte* ptr = &(row[x*3]); //get pixel rgb                                                                         
+                                state.setLightOut(i->c_str(), ptr[0], ptr[1], ptr[2]);
+                                x++;
+                }
+                
+                i = lowerLedNames.begin();
+                x=40; //lower soma LED's start at pixel 40
+                for (i = lowerLedNames.begin(); i != lowerLedNames.end(); i++) {                                                                                    
+                                png_byte* ptr = &(row[x*3]); //get pixel rgb                                                                         
+                                state.setLightOut(i->c_str(), ptr[0], ptr[1], ptr[2]);
+                                x++;
+                }
 
-		for (i = lowerLedNames.begin(); i != lowerLedNames.end(); i++ )
-			state.setLightOut(i->c_str(), val, 0x0, 0x0);
-
-		for (i = upperLedNames.begin(); i != upperLedNames.end(); i++ )
-			state.setLightOut(i->c_str(), val, 0x0, 0x0);
-
-		y++;
-                val++;
+                y++; //one line per frame
 
 		gettimeofday(&tv, NULL);
 		timersub(&tv, &last_tv, &tmp_tv);
