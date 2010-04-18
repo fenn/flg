@@ -15,6 +15,7 @@
  */
 
 #include "Soma.hh"
+#include "../patterns/pngpattern.h"
 
 Soma::Soma()
 {
@@ -93,6 +94,12 @@ void Soma::run(void)
 	struct timeval last_tv;
 	struct timeval tmp_tv;
 	struct timeval frametime;
+        png_bytep * row_pointers;
+        //png_infop info_ptr;
+        //png_structp png_ptr;
+        int width, height; //width = number of channels; height = duration of sequence
+        int x=0;
+        int y=0;
 
 	uint8_t val = 0;
 	vector<string>::iterator i;
@@ -107,7 +114,16 @@ void Soma::run(void)
 	// XXX: gettimeofday is not garunteet to be regular as the clock can be
 	//      set at any time (by user, ntp, etc.)
 	gettimeofday(&last_tv, NULL);
-	while (1) {
+        
+        row_pointers = read_png_file((char *) "../patterns/action.png");
+        //png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+        //info_ptr = png_create_info_struct(png_ptr);
+        //png_read_info(png_ptr, info_ptr);
+        width = get_png_width();
+        height= get_png_height();
+        
+        printf("height: %d, width: %d\n", height, width); 
+        while (1) {
 		state.sync();
 		state.setDigitalOut("a1b", state.getDigitalIn("l6"));
 		state.setDigitalOut("a2b", state.getDigitalIn("l7"));
@@ -117,9 +133,26 @@ void Soma::run(void)
 		state.setDigitalOut("a6b", state.getDigitalIn("l11"));
 		state.setDigitalOut("a7b", state.getDigitalIn("l12"));
 		state.setDigitalOut("a8b", state.getDigitalIn("l13"));
+                
+                
+                //PNG based sequencing
+                if (y >= height) {y = 0;}
+                png_byte* row = row_pointers[y];                                                                             
+                i = axonLedNames.begin();
+                //for (x=0; x<width; x++) {   
+                x=0;
+                for (i = axonLedNames.begin(); i != axonLedNames.end(); i++) {                                                                                    
+                                png_byte* ptr = &(row[x*3]); //get pixel rgb                                                                         
+                                //fprintf(stderr, "Pixel [x: %d, y: %d] R:%d G:%d B:%d\n",                                                      
+                                //        x, y, ptr[0], ptr[1], ptr[2]);
+                                state.setLightOut(i->c_str(), ptr[0], ptr[1], ptr[2]);
+                                //printf("%d %d %d | ", ptr[0], ptr[1], ptr[2]);
+                                x++;
+                }
+                //printf("\n"); 
 
-		for (i = axonLedNames.begin(); i != axonLedNames.end(); i++ )
-			state.setLightOut(i->c_str(), val, 0x0, 0x0);
+		//for (i = axonLedNames.begin(); i != axonLedNames.end(); i++ )
+		//	state.setLightOut(i->c_str(), val, 0x0, 0x0);
 
 		for (i = lowerLedNames.begin(); i != lowerLedNames.end(); i++ )
 			state.setLightOut(i->c_str(), val, 0x0, 0x0);
@@ -127,7 +160,8 @@ void Soma::run(void)
 		for (i = upperLedNames.begin(); i != upperLedNames.end(); i++ )
 			state.setLightOut(i->c_str(), val, 0x0, 0x0);
 
-		val++;
+		y++;
+                val++;
 
 		gettimeofday(&tv, NULL);
 		timersub(&tv, &last_tv, &tmp_tv);

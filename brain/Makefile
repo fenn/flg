@@ -2,8 +2,7 @@ SIM_OBJS=mongoose.o \
 	Soma.o \
 	SimState.o \
 	SimLink.o \
-	sim.o
-
+	sim.o ../patterns/pngpattern.o
 OBJS=${SIM_OBJS}
 
 TARGETS=sim
