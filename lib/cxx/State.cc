@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <cstring>
+#include <string.h>
 #include <util.hh>
 #include <State.hh>
 

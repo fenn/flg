@@ -71,6 +71,15 @@ Soma::Soma()
 	upperLedNames.push_back("u19c");
 	upperLedNames.push_back("u20a");
 	upperLedNames.push_back("u20c");
+
+        digitalNames.push_back("a1b");
+        digitalNames.push_back("a2b");
+        digitalNames.push_back("a3b");
+        digitalNames.push_back("a4b");
+        digitalNames.push_back("a5b");
+        digitalNames.push_back("a6b");
+        digitalNames.push_back("a7b");
+        digitalNames.push_back("a8b");
 }
 
 Soma::~Soma()
@@ -78,9 +87,9 @@ Soma::~Soma()
 
 }
 
-bool Soma::loadConfig(const char *fileName)
+bool Soma::loadConfig(const char *fileName, const char *eventsfileName)
 {
-	return state.loadConfig(fileName);
+	return state.loadConfig(fileName) && em.loadConfig(eventsfileName);
 }
 
 bool Soma::attachLink(const char *busName, Link *link)
@@ -164,6 +173,8 @@ void Soma::run(void)
                 }
 
                 y++; //one line per frame
+
+                em.update(&state, lowerLedNames, axonLedNames, upperLedNames, digitalNames);
 
 		gettimeofday(&tv, NULL);
 		timersub(&tv, &last_tv, &tmp_tv);

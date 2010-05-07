@@ -85,9 +85,10 @@ bool TtyLink::send(const void *data, int len)
 
 	if (linkEcho) {
 		while (retval--) {
-			int blah;
-                        blah = read(fd, &c, 1);
-
+			if (read(fd, &c, 1) != 1) {
+                           perror("echo read failed");
+                           return false;
+                        }
 		}
 	}
 
